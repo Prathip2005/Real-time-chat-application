@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>real time chat application</title>
+    <style>
+        body {
+            background-color: #90EE90;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .logo {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #008000;
+        }
+        .form {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .input {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        .button {
+            background-color: #008000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+        }
+        .messageArea {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            height: 200px;
+            overflow-y: scroll;
+        }
+        .message {
+            margin-bottom: 5px;
+        }
+        .username {
+            font-weight: bold;
+            color: #008000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="logo">real time chat application ChatRoom</h1>
+        <form class="form" id="form">
+            <input class="input" type="text" placeholder="Name" id="myname" required />
+            <input class="input" type="text" placeholder="Message" id="message" required />
+            <button class="button" type="submit">Send Message</button>
+        </form>
+        <div class="messageArea" id="messageArea"></div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const form = document.getElementById('form');
+        const myname = document.getElementById('myname');
+        const message = document.getElementById('message');
+        const messageArea = document.getElementById('messageArea');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            if (myname.value && message.value) {
+                socket.emit('chat message', { user: myname.value, msg: message.value });
+                message.value = '';
+                message.focus();
+            }
+        });
+
+        socket.on('chat message', data => {
+            const p = document.createElement('p');
+            p.classList.add('message');
+           p.innerHTML = `<span class="username">${data.user}:</span> ${data.msg}`;
+
+            messageArea.appendChild(p);
+            messageArea.scrollTop = messageArea.scrollHeight;
+        });
+    </script>
+</body>
+</html>
+        
